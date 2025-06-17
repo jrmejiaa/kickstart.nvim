@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -140,6 +140,21 @@ vim.o.timeoutlen = 300
 -- Configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
+
+-- Set tab to 4 characters
+vim.opt['tabstop'] = 4
+vim.opt['shiftwidth'] = 4
+vim.opt['expandtab'] = true
+
+-- Allow me to set the cwd as the one I call using the cmd line when searching
+local group_cdpwd = vim.api.nvim_create_augroup('group_cdpwd', { clear = true })
+vim.api.nvim_create_autocmd('VimEnter', {
+  group = group_cdpwd,
+  pattern = '*',
+  callback = function()
+    vim.api.nvim_set_current_dir(vim.fn.expand '%:p:h')
+  end,
+})
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -865,7 +880,25 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
+  {
+    'f-person/git-blame.nvim',
+    -- load the plugin at startup
+    event = 'VeryLazy',
+    -- Because of the keys part, you will be lazy loading this plugin.
+    -- The plugin wil only load once one of the keys is used.
+    -- If you want to load the plugin at startup, add something like event = "VeryLazy",
+    -- or lazy = false. One of both options will work.
+    opts = {
+      -- your configuration comes here
+      -- for example
+      enabled = false, -- if you want to enable the plugin
+      message_template = ' <summary> • <date> • <author> • <<sha>>', -- template for the blame message, check the Message template section for more options
+      date_format = '%m-%d-%Y %H:%M:%S', -- template for the date, check Date format section for more options
+      virtual_text_column = 1, -- virtual text start column, check Start virtual text at column section for more options
+    },
+  },
+
+  -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
 
